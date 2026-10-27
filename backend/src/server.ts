@@ -18,7 +18,7 @@ const jobs = env.CRON_ENABLED ? startJobs() : [];
 
 storage.init().catch((err) => logger.error({ err }, "Fayl saqlash joyini tayyorlab bo'lmadi"));
 
-server.listen(env.PORT, () => {
+server.listen(env.PORT, env.HOST, () => {
   logger.info(`API ishga tushdi: http://localhost:${env.PORT}`);
 });
 

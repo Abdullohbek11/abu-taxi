@@ -18,6 +18,8 @@ const schema = z
   .object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     PORT: z.coerce.number().int().positive().default(4000),
+    /** Qaysi manzilda eshitadi. Firewall'siz serverda proxy ortida — 127.0.0.1 (API tashqariga ochilmaydi) */
+    HOST: z.string().default('0.0.0.0'),
 
     /** mysql://USER:PAROL@HOST:3306/DB */
     DATABASE_URL: z.string().regex(/^mysql:\/\//, 'DATABASE_URL mysql:// bilan boshlanishi kerak'),
