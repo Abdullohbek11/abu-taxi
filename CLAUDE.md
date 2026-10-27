@@ -32,4 +32,4 @@ Node.js 20 + TypeScript (strict), Express + zod, MySQL 8 + Prisma (yagona ma'lum
 - Faqat APPROVED haydovchi safar e'lon qiladi va yukka taklif beradi. Bloklangan foydalanuvchi hech narsa yaratmaydi.
 - Sharh faqat COMPLETED safar / DELIVERED yukdan keyin 14 kun ichida, bitta muallif — bitta sharh.
 - Kirish faqat Telegram bot orqali (parolsiz, SMS yo'q): botga kontakt (o'z raqami) → 6 belgili, 60 soniyalik kod → `POST /auth/code`. Telefon va `telegramUsername` faqat bot orqali o'zgaradi.
-- Yagona istisno — ADMIN: `/admin/login` sahifasida telefon + parol (`POST /auth/admin/login`, scrypt, 5 xato → 30 daqiqa qulf, har kirish jurnalga va Telegram'ga). Parol faqat CLI (`npm run admin -- password <tel>`) yoki admin paneldagi "Xavfsizlik" bo'limi orqali o'rnatiladi. Oddiy foydalanuvchilarga parol qo'shilmaydi.
+- Yagona istisno — ADMIN: `/admin/login` sahifasida telefon + parol (`POST /auth/admin/login`, scrypt, kamida 8 belgi, 5 xato → 30 daqiqa qulf, har kirish jurnalga va Telegram'ga). Parol faqat CLI (`npm run admin -- password <tel>`) yoki admin paneldagi "Xavfsizlik" bo'limi orqali o'rnatiladi. Oddiy foydalanuvchilarga parol qo'shilmaydi.

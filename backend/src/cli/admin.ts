@@ -39,7 +39,7 @@ function askHidden(question: string): Promise<string> {
 /** Terminalda — ikki marta yashirin so'raladi; pipe orqali (CI, skript) — stdin'ning birinchi ikki qatori. */
 async function readPasswords(): Promise<[string, string]> {
   if (process.stdin.isTTY) {
-    const p1 = await askHidden('Yangi parol (kamida 12 belgi, harf va raqam): ');
+    const p1 = await askHidden('Yangi parol (kamida 8 belgi, harf va raqam): ');
     const p2 = await askHidden('Parolni takrorlang: ');
     return [p1, p2];
   }

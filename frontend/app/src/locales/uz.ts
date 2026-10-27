@@ -617,7 +617,7 @@ export const uz = {
   'adm.reviewDeleteConfirm': "Sharh o'chiriladi va reyting qayta hisoblanadi. Amal jurnalga yoziladi.",
   'adm.auditHint': "Tasdiqlash, bloklash, hujjat va mijoz kartasini ko'rish, eksport va kirishlar — hammasi shu yerda.",
   'adm.pwTitle': "Admin panel paroli",
-  'adm.pwHint': "Kamida 12 belgi, harf va raqam. Saqlangandan keyin barcha sessiyalar yopiladi va qayta kirasiz.",
+  'adm.pwHint': "Kamida 8 belgi, harf va raqam. Saqlangandan keyin barcha sessiyalar yopiladi va qayta kirasiz.",
   'adm.pwCurrent': "Joriy parol",
   'adm.pwNew': "Yangi parol",
   'adm.pwAgain': "Yangi parolni takrorlang",

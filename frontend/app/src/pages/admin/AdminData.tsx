@@ -750,7 +750,7 @@ export function AdminSettings() {
         {t('adm.pwHint')}
       </p>
       <Input label={t('adm.pwCurrent')} type="password" autoComplete="current-password" value={cur} onChange={(e) => setCur(e.target.value)} />
-      <Input label={t('adm.pwNew')} type="password" autoComplete="new-password" value={next} onChange={(e) => setNext(e.target.value)} minLength={12} required />
+      <Input label={t('adm.pwNew')} type="password" autoComplete="new-password" value={next} onChange={(e) => setNext(e.target.value)} minLength={8} required />
       <Input label={t('adm.pwAgain')} type="password" autoComplete="new-password" value={again} onChange={(e) => setAgain(e.target.value)} required error={mismatch ? t('adm.pwMismatch') : undefined} />
       {change.isError ? <Alert kind="error">{errorText(change.error, t)}</Alert> : null}
       <Button type="submit" loading={change.isPending} disabled={!next || mismatch}>

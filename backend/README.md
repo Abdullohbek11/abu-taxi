@@ -72,7 +72,7 @@ Keyin admin botga **aynan shu raqamni** yuboradi — Telegram akkaunti hisobga b
 npm run admin -- password +998901234567                                # parol ikki marta so'raladi, ekranda ko'rinmaydi
 docker compose exec api node dist/cli/admin.js password +998901234567  # production
 ```
-Talab: kamida 12 belgi, harf va raqam, telefon raqamini o'z ichiga olmaydi. Parol o'rnatilganda adminning barcha sessiyalari yopiladi.
+Talab: kamida 8 belgi, harf va raqam, telefon raqamini o'z ichiga olmaydi. Parol o'rnatilganda adminning barcha sessiyalari yopiladi.
 
 **Haydovchi tarifi (pullik, 30 kun).** Admin panel → "Tarif sozlamalari": yoqish, narx, kunlar, bepul sinov kunlari, karta raqami va egasi, chek yuboriladigan Telegram, Payme/Click merchant ID. Tarif yoqilganda to'lamagan haydovchi ro'yxatdan o'tadi va safar e'lon qiladi, lekin yo'lovchini tasdiqlay olmaydi (raqami ochilmaydi), safar so'rovini (sayt va bot) ololmaydi, yukka taklif bera olmaydi — `402 SUBSCRIPTION_REQUIRED`, saytda "Tarif kerak" oynasi chiqadi. Haydovchi `/driver/tariff` sahifasida kartaga o'tkazib chekni yuklaydi (yoki Telegram'da yuboradi, yoki Payme/Click tugmasi). Admin "To'lovlar" bo'limida chekni ko'rib tasdiqlaydi — obuna 30 kunga (faol bo'lsa tugash sanasidan) uzayadi, haydovchiga Telegram'da xabar boradi. Chek Telegram'da kelgan bo'lsa — mijoz kartasidan "Tarif berish". Cron har kuni 10:00 da "tugashiga 3 kun qoldi" va "tugadi" xabarlarini yuboradi.
 

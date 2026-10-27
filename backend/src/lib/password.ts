@@ -43,11 +43,12 @@ export async function verifyPassword(password: string, stored: string | null | u
 }
 
 /**
- * Parol talablari: kamida 12 belgi, harf va raqam, telefon raqamini o'z ichiga olmaydi.
+ * Parol talablari: kamida 8 belgi, harf va raqam, telefon raqamini o'z ichiga olmaydi.
+ * (Egasining qarori bilan 12 dan 8 ga tushirilgan; himoya asosan urinishlar qulfiga tayanadi.)
  * Qaytaradi: muammo matni yoki null.
  */
 export function passwordProblem(password: string, phone?: string | null): string | null {
-  if (password.length < 12) return "Parol kamida 12 belgidan iborat bo'lishi kerak|Пароль должен содержать не менее 12 символов";
+  if (password.length < 8) return "Parol kamida 8 belgidan iborat bo'lishi kerak|Пароль должен содержать не менее 8 символов";
   if (password.length > 128) return "Parol juda uzun|Пароль слишком длинный";
   if (!/\p{L}/u.test(password) || !/\d/.test(password)) return "Parolda harf ham, raqam ham bo'lishi kerak|Пароль должен содержать и буквы, и цифры";
   const digits = phone?.replace(/\D/g, '').slice(-9);
