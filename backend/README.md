@@ -47,6 +47,9 @@ Hammasini Docker ichida ishga tushirish: `docker compose up -d --build`. `api` k
 | Haydovchilar (10) | `+998901110000` … `+998901110009` | Bahodir A. (Cobalt), Sardor R. (Labo), … |
 | Yo'lovchilar (12) | `+998932220000` … | |
 | Yuk jo'natuvchilar (5) | `+998943330000` … | |
+| Qo'shimcha demo (`npm run seed:demo`) | `+998991000000` … | 60 haydovchi, 80 yo'lovchi, 20 yuk egasi, 14 kunlik safarlar, yuklar, safar so'rovlari, sharhlar |
+
+`npm run seed` bazani tozalab qayta to'ldiradi; `npm run seed:demo` esa mavjud ma'lumotlarni **o'chirmasdan** qo'shadi (qayta ishga tushirilsa takrorlanmaydi). Ikkalasi ham `NODE_ENV=production` da ishlamaydi.
 
 Kirish faqat Telegram bot orqali: botga raqamini yuborgan foydalanuvchi seed'dagi hisobiga avtomatik bog'lanadi (raqam mos kelsa).
 
@@ -213,7 +216,24 @@ Qisqacha: helmet; CORS faqat `FRONTEND_URL` uchun; IP (IPv6 /64) bo'yicha rate l
 
 ---
 
-## Deploy (VPS + Docker + nginx + SSL)
+## Joriy production
+
+Sayt: **https://abutax.duckdns.org** — Ubuntu 22.04 VPS, Docker'siz:
+
+- kod `/abutax` da; `abutax-api` (API, `127.0.0.1:4100`) va `abutax-bot` systemd xizmatlari alohida `abutax` tizim foydalanuvchisi nomidan ishlaydi;
+- MySQL 8 serverning o'zida, rasmlar lokal diskda (`uploads/`);
+- Caddy: HTTPS (Let's Encrypt, avtomatik yangilanadi), `frontend/app/dist` statik fayllari, `/api`, `/socket.io`, `/uploads` → API; `/api/v1/internal/*` tashqaridan 404.
+
+Yangilash:
+```bash
+cd /abutax && git pull
+cd backend && npm ci && npx prisma migrate deploy && npm run build
+cd ../bot && npm ci && npm run build
+cd ../frontend/app && npm ci && npm run build
+systemctl restart abutax-api abutax-bot
+```
+
+## Deploy (VPS + Docker + nginx + SSL) — muqobil variant
 
 0. **Bot:** @BotFather → `/newbot` → token'ni `bot/.env` dagi `BOT_TOKEN` ga yozing; `BOT_API_SECRET` ni ikkala `.env` ga bir xil qilib yozing; `WEB_URL=https://abutax.uz`. Bot username'ini `backend/.env` dagi `BOT_USERNAME` ga yozing (sayt kirish sahifasida ko'rsatiladi). Bot `docker compose` ichida avtomatik ishga tushadi (long polling — webhook/SSL shart emas).
 
