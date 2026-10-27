@@ -1,0 +1,540 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────── Enumlar ───────────────────────────
+
+enum Role {
+  PASSENGER
+  SENDER
+  DRIVER
+  ADMIN
+}
+
+enum Lang {
+  UZ
+  RU
+}
+
+enum DriverStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum VehicleStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum DocumentType {
+  LICENSE
+  TECH_PASSPORT
+  CAR_PHOTO
+}
+
+enum DocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum TripStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+  CANCELLED
+  COMPLETED
+}
+
+enum CargoType {
+  FURNITURE
+  APPLIANCE
+  FOOD
+  CONSTRUCTION
+  OTHER
+}
+
+enum CargoStatus {
+  OPEN
+  MATCHED
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+/// Sharh kimga qo'yilgan: haydovchiga (DRIVER) yoki mijozga — yo'lovchi / yuk egasi (CLIENT).
+/// Bitta odam ham haydovchi, ham yo'lovchi bo'lishi mumkin — reytinglar aralashmasligi uchun.
+enum ReviewRole {
+  DRIVER
+  CLIENT
+}
+
+enum PaymentStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+}
+
+/// CARD — kartaga o'tkazma + chek; PAYME/CLICK — onlayn; ADMIN — admin qo'lda berdi (masalan chek Telegram'da kelgan)
+enum PaymentMethod {
+  CARD
+  PAYME
+  CLICK
+  ADMIN
+}
+
+enum RideRequestStatus {
+  OPEN
+  ASSIGNED
+  CANCELLED
+  EXPIRED
+}
+
+// ─────────────────────────── Modellar ───────────────────────────
+
+model User {
+  id                String    @id @default(cuid())
+  phone             String?   @unique // +998XXXXXXXXX; Telegram orqali kirganda keyinroq qo'shiladi
+  telegramId        String?   @unique
+  telegramUsername  String?
+  firstName         String?
+  lastName          String?
+  avatarUrl         String?   @db.VarChar(1024)
+  role              Role? // birinchi kirishdan keyin PATCH /users/me/role bilan tanlanadi
+  lang              Lang      @default(UZ)
+  isBlocked         Boolean   @default(false)
+  blockReason       String?   @db.VarChar(500)
+  /// Faqat ADMIN uchun: admin panelga parol bilan kirish (scrypt). Oddiy foydalanuvchilar faqat Telegram bot orqali kiradi.
+  passwordHash      String?   @db.VarChar(255)
+  passwordChangedAt DateTime?
+  /// Mijoz (yo'lovchi / yuk egasi) sifatidagi reyting — haydovchilar qo'ygan baholardan
+  clientRatingAvg   Decimal   @default(0) @db.Decimal(3, 2)
+  clientRatingCount Int       @default(0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  driverProfile   DriverProfile?
+  bookings        Booking[]
+  cargoRequests   CargoRequest[]
+  reviewsWritten  Review[]       @relation("ReviewAuthor")
+  reviewsReceived Review[]       @relation("ReviewTarget")
+  notifications   Notification[]
+  refreshTokens   RefreshToken[]
+  auditLogs       AuditLog[]
+  loginCodes      LoginCode[]
+  rideRequests    RideRequest[]
+  payments        Payment[]
+}
+
+model DriverProfile {
+  id                 String       @id @default(cuid())
+  userId             String       @unique
+  status             DriverStatus @default(PENDING)
+  rejectReason       String?      @db.VarChar(500)
+  ratingAvg          Decimal      @default(0) @db.Decimal(3, 2)
+  ratingCount        Int          @default(0)
+  /// Saralash uchun Bayes bahosi: kam sharhli 5.0 ko'p sharhli 4.9 dan oldinga o'tib ketmaydi
+  ratingScore        Decimal      @default(4.3) @db.Decimal(4, 3)
+  tripsCount         Int          @default(0)
+  /// Pullik tarif: shu vaqtgacha yo'lovchi qabul qila oladi (tarif yoqilgan bo'lsa)
+  subscriptionUntil  DateTime?
+  /// "Tugashiga 3 kun qoldi" va "tugadi" xabarlari bir marta yuboriladi; obuna uzaytirilganda tozalanadi
+  expiringNotifiedAt DateTime?
+  expiredNotifiedAt  DateTime?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicles     Vehicle[]
+  documents    Document[]
+  trips        Trip[]
+  cargoOffers  CargoOffer[]
+  rideRequests RideRequest[]
+
+  @@index([status])
+}
+
+model Vehicle {
+  id           String        @id @default(cuid())
+  driverId     String
+  model        String
+  color        String
+  plateNumber  String        @unique
+  seats        Int
+  photos       Json? // string[] — URL'lar (MySQL skalyar ro'yxatlarni qo'llamaydi)
+  acceptsCargo Boolean       @default(false)
+  status       VehicleStatus @default(PENDING)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  driver       DriverProfile @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  trips        Trip[]
+  rideRequests RideRequest[]
+
+  @@index([driverId])
+}
+
+model Document {
+  id        String         @id @default(cuid())
+  driverId  String
+  type      DocumentType
+  fileKey   String // PRIVATE bucket'dagi kalit
+  status    DocumentStatus @default(PENDING)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  driver DriverProfile @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@index([driverId])
+}
+
+model City {
+  id        String   @id @default(cuid())
+  nameUz    String
+  nameRu    String
+  region    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tripsFrom Trip[]         @relation("TripFrom")
+  tripsTo   Trip[]         @relation("TripTo")
+  cargoFrom CargoRequest[] @relation("CargoFrom")
+  cargoTo   CargoRequest[] @relation("CargoTo")
+  rideFrom  RideRequest[]  @relation("RideFrom")
+  rideTo    RideRequest[]  @relation("RideTo")
+
+  @@unique([region, nameUz])
+}
+
+model Trip {
+  id             String     @id @default(cuid())
+  driverId       String
+  vehicleId      String
+  fromCityId     String
+  toCityId       String
+  departureAt    DateTime
+  totalSeats     Int
+  availableSeats Int
+  pricePerSeat   Int // eng arzon o'rin narxi (qidiruv/saralash uchun)
+  seatPrices     Json? // int[] — har bir o'rin narxi (1-o'rin = old o'rin); NULL — hammasi pricePerSeat
+  pickupFromHome Boolean    @default(false)
+  acceptsCargo   Boolean    @default(false)
+  note           String?    @db.VarChar(500)
+  status         TripStatus @default(SCHEDULED)
+  completedAt    DateTime? // sharh qoldirish muddati shundan hisoblanadi
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  driver      DriverProfile @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  vehicle     Vehicle       @relation(fields: [vehicleId], references: [id])
+  fromCity    City          @relation("TripFrom", fields: [fromCityId], references: [id])
+  toCity      City          @relation("TripTo", fields: [toCityId], references: [id])
+  bookings    Booking[]
+  cargoOffers CargoOffer[]
+
+  @@index([fromCityId, toCityId, departureAt, status])
+  @@index([driverId, status])
+}
+
+model Booking {
+  id             String        @id @default(cuid())
+  tripId         String
+  passengerId    String
+  seats          Int
+  seatNumbers    Json? // int[] — tanlangan o'rin raqamlari
+  totalPrice     Int
+  pickupAddress  String?       @db.VarChar(300)
+  pickupLat      Float?
+  pickupLng      Float?
+  dropoffAddress String?       @db.VarChar(300)
+  dropoffLat     Float?
+  dropoffLng     Float?
+  comment        String?       @db.VarChar(500)
+  status         BookingStatus @default(PENDING)
+  cancelledAt    DateTime?
+  cancelledLate  Boolean       @default(false) // jo'nashga 2 soatdan kam qolganda bekor qilingan
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  passenger User     @relation(fields: [passengerId], references: [id], onDelete: Cascade)
+  reviews   Review[]
+
+  @@index([tripId, status])
+  @@index([passengerId, status])
+}
+
+model CargoRequest {
+  id             String      @id @default(cuid())
+  senderId       String
+  type           CargoType
+  weightKg       Int
+  lengthCm       Int?
+  widthCm        Int?
+  heightCm       Int?
+  photos         Json? // string[]
+  fromCityId     String
+  toCityId       String
+  pickupAddress  String      @db.VarChar(300)
+  pickupLat      Float?
+  pickupLng      Float?
+  dropoffAddress String      @db.VarChar(300)
+  dropoffLat     Float?
+  dropoffLng     Float?
+  date           DateTime
+  offeredPrice   Int?
+  description    String?     @db.VarChar(1000)
+  status         CargoStatus @default(OPEN)
+  deliveredAt    DateTime? // sharh qoldirish muddati shundan hisoblanadi
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  sender   User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  fromCity City         @relation("CargoFrom", fields: [fromCityId], references: [id])
+  toCity   City         @relation("CargoTo", fields: [toCityId], references: [id])
+  offers   CargoOffer[]
+  reviews  Review[]
+
+  @@index([status, fromCityId, toCityId, date])
+  @@index([senderId, status])
+}
+
+model CargoOffer {
+  id             String      @id @default(cuid())
+  cargoRequestId String
+  driverId       String
+  tripId         String?
+  price          Int
+  message        String?     @db.VarChar(500)
+  status         OfferStatus @default(PENDING)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  cargoRequest CargoRequest  @relation(fields: [cargoRequestId], references: [id], onDelete: Cascade)
+  driver       DriverProfile @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  trip         Trip?         @relation(fields: [tripId], references: [id], onDelete: SetNull)
+
+  @@index([cargoRequestId, status])
+  @@index([driverId, status])
+}
+
+/**
+ * Safar topilmaganda yo'lovchi qoldiradigan so'rov. Avval shu yo'nalishdagi haydovchilarga bot orqali
+ * yuboriladi; belgilangan vaqt ichida hech kim olmasa, bot uni Telegram guruhga tashlaydi.
+ * Haydovchi "Olaman" deb narxni yozadi — yo'lovchiga haydovchi, mashina, narx va telefon yuboriladi.
+ */
+model RideRequest {
+  id           String            @id @default(cuid())
+  passengerId  String
+  fromCityId   String
+  toCityId     String
+  date         DateTime // Toshkent kunining boshi (UTC)
+  seats        Int
+  offeredPrice Int? // yo'lovchi taklif qilgan narx, kishi boshiga
+  note         String?           @db.VarChar(500)
+  status       RideRequestStatus @default(OPEN)
+
+  // Biriktirilgan haydovchi: tizimdagi haydovchi bo'lsa driverId/vehicleId ham bor; admin tashqi
+  // haydovchini qo'lda kiritsa — faqat quyidagi nusxa (snapshot). Yo'lovchiga shu ma'lumot ko'rsatiladi.
+  driverId       String?
+  vehicleId      String?
+  pricePerSeat   Int?
+  driverName     String?   @db.VarChar(100)
+  driverPhone    String?   @db.VarChar(20)
+  driverTelegram String?   @db.VarChar(64)
+  carModel       String?   @db.VarChar(100)
+  carColor       String?   @db.VarChar(50)
+  carPlate       String?   @db.VarChar(20)
+  assignedAt     DateTime?
+  assignedById   String? // qo'lda biriktirgan admin
+
+  /// Bot shaxsiy xabar yuborgan haydovchilar soni (0 bo'lsa — darhol guruhga)
+  notifiedDrivers Int       @default(0)
+  groupPostedAt   DateTime?
+  groupChatId     String?   @db.VarChar(32)
+  groupMessageId  Int?
+  /// Guruhdagi post "olindi/bekor qilindi" deb yangilangan vaqt
+  groupClosedAt   DateTime?
+  cancelledAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  passenger User           @relation(fields: [passengerId], references: [id], onDelete: Cascade)
+  fromCity  City           @relation("RideFrom", fields: [fromCityId], references: [id])
+  toCity    City           @relation("RideTo", fields: [toCityId], references: [id])
+  driver    DriverProfile? @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  vehicle   Vehicle?       @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  reviews   Review[]
+
+  @@index([status, groupPostedAt, createdAt])
+  @@index([status, fromCityId, toCityId, date])
+  @@index([passengerId, status])
+  @@index([driverId, status])
+}
+
+/// Haydovchi tarifi uchun to'lov. Admin tasdiqlaganda obuna `days` kunga uzayadi.
+model Payment {
+  id           String        @id @default(cuid())
+  userId       String
+  amount       Int // so'm
+  days         Int
+  method       PaymentMethod
+  status       PaymentStatus @default(PENDING)
+  /// Chek rasmi (private saqlash kaliti)
+  receiptKey   String?       @db.VarChar(255)
+  note         String?       @db.VarChar(500)
+  rejectReason String?       @db.VarChar(500)
+  reviewedById String?
+  reviewedAt   DateTime?
+  periodFrom   DateTime?
+  periodUntil  DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([userId, createdAt])
+}
+
+/// Admin paneldan o'zgartiriladigan sozlamalar (masalan `billing`: narx, kun, karta, Payme/Click).
+model Setting {
+  key       String   @id @db.VarChar(64)
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id             String     @id @default(cuid())
+  authorId       String
+  targetUserId   String
+  bookingId      String?
+  cargoRequestId String?
+  rideRequestId  String?
+  targetRole     ReviewRole @default(DRIVER)
+  rating         Int // 1–5
+  text           String?    @db.VarChar(1000)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  author       User          @relation("ReviewAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  targetUser   User          @relation("ReviewTarget", fields: [targetUserId], references: [id], onDelete: Cascade)
+  booking      Booking?      @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  cargoRequest CargoRequest? @relation(fields: [cargoRequestId], references: [id], onDelete: Cascade)
+  rideRequest  RideRequest?  @relation(fields: [rideRequestId], references: [id], onDelete: Cascade)
+
+  @@unique([authorId, bookingId])
+  @@unique([authorId, cargoRequestId])
+  @@unique([authorId, rideRequestId])
+  @@index([targetUserId, createdAt])
+  @@index([targetUserId, targetRole])
+}
+
+model Notification {
+  id             String    @id @default(cuid())
+  userId         String
+  type           String
+  payload        Json
+  readAt         DateTime?
+  /// Bot Telegram orqali yuborgan (yoki yuborish shart emas deb belgilagan) vaqt — outbox
+  telegramSentAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+  @@index([telegramSentAt, createdAt])
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique @db.Char(64)
+  expiresAt DateTime
+  revokedAt DateTime?
+  rotatedAt DateTime? // rotatsiya orqali almashtirilgan (logout emas)
+  userAgent String?   @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/// Admin amallari jurnali (kim, qachon, nimani) — hujjatlarni ko'rish ham yoziladi.
+model AuditLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  action     String // driver.approve, driver.reject, vehicle.approve, document.view, user.block ...
+  targetType String
+  targetId   String
+  meta       Json?
+  ip         String?  @db.VarChar(64)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  admin User @relation(fields: [adminId], references: [id])
+
+  @@index([targetType, targetId])
+  @@index([adminId, createdAt])
+  @@index([createdAt])
+}
+
+// ───────────── Vaqtinchalik holat: OTP, rate limit, cron qulflari ─────────────
+
+/// Telegram bot bergan kirish kodi (OTP). Faqat HMAC hash saqlanadi, bir martalik, 60 soniya.
+model LoginCode {
+  id        String    @id @default(cuid())
+  userId    String
+  codeHash  String    @unique @db.Char(64)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/// Rate limit hisoblagichlari (qat'iy oyna). Muddati o'tganlari cron orqali tozalanadi.
+model RateLimit {
+  key       String   @id @db.VarChar(191)
+  count     Int
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
+/// Cron vazifalari uchun taqsimlangan qulf (bir nechta API instansiyasida bitta bajaradi).
+model JobLock {
+  name      String   @id @db.VarChar(100)
+  owner     String   @db.Char(36)
+  expiresAt DateTime
+}

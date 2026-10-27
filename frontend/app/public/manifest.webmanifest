@@ -1,0 +1,23 @@
+{
+  "name": "Abu Tax — shaharlararo taksi va yuk",
+  "short_name": "Abu Tax",
+  "description": "Butun O'zbekiston bo'ylab shaharlararo taksi va yuk tashish. Haydovchi bilan to'g'ridan-to'g'ri, vositachisiz.",
+  "lang": "uz",
+  "id": "/",
+  "start_url": "/search?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#FFC300",
+  "categories": ["travel", "navigation"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Safar qidirish", "url": "/search", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Mening safarlarim", "url": "/my-trips", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

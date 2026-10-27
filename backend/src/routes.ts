@@ -1,0 +1,33 @@
+import { Router } from 'express';
+import { adminRouter } from './modules/admin/admin.routes.js';
+import { authRouter } from './modules/auth/auth.routes.js';
+import { billingRouter } from './modules/billing/billing.routes.js';
+import { bookingsRouter } from './modules/bookings/bookings.routes.js';
+import { cargoRouter, offersRouter } from './modules/cargo/cargo.routes.js';
+import { citiesRouter } from './modules/cities/cities.routes.js';
+import { driversRouter } from './modules/drivers/drivers.routes.js';
+import { notificationsRouter } from './modules/notifications/notifications.routes.js';
+import { rideRequestsRouter } from './modules/ride-requests/rideRequests.routes.js';
+import { reviewsRouter } from './modules/reviews/reviews.routes.js';
+import { statsRouter } from './modules/stats/stats.routes.js';
+import { tripsRouter } from './modules/trips/trips.routes.js';
+import { usersRouter } from './modules/users/users.routes.js';
+import { vehiclesRouter } from './modules/vehicles/vehicles.routes.js';
+
+export const apiRouter = Router();
+
+apiRouter.use('/auth', authRouter);
+apiRouter.use('/users', usersRouter);
+apiRouter.use('/cities', citiesRouter);
+apiRouter.use('/drivers', driversRouter);
+apiRouter.use('/vehicles', vehiclesRouter);
+apiRouter.use('/trips', tripsRouter);
+apiRouter.use('/bookings', bookingsRouter);
+apiRouter.use('/cargo', cargoRouter);
+apiRouter.use('/offers', offersRouter);
+apiRouter.use('/ride-requests', rideRequestsRouter);
+apiRouter.use('/reviews', reviewsRouter);
+apiRouter.use('/notifications', notificationsRouter);
+apiRouter.use('/stats', statsRouter);
+apiRouter.use('/billing', billingRouter);
+apiRouter.use('/admin', adminRouter);

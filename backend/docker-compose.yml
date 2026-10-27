@@ -1,0 +1,111 @@
+# Xavfsizlik: barcha portlar faqat 127.0.0.1 ga ochiladi (Docker UFW'ni chetlab o'tadi —
+# 0.0.0.0 ga ochilgan MySQL internetga ochiq bo'lib qoladi). Tashqaridan faqat nginx orqali.
+# Parollar .env dan olinadi; standart qiymatlar faqat lokal ishlab chiqish uchun.
+
+x-security: &security
+  security_opt:
+    - no-new-privileges:true
+  restart: unless-stopped
+
+services:
+  api:
+    <<: *security
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: mysql://${MYSQL_USER:-abutax}:${MYSQL_PASSWORD:-abutax}@mysql:3306/${MYSQL_DATABASE:-abutax}
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    ports:
+      - "127.0.0.1:${PORT:-4000}:4000"
+    depends_on:
+      mysql: { condition: service_healthy }
+      minio-init: { condition: service_completed_successfully }
+    read_only: true
+    tmpfs:
+      - /tmp
+    # STORAGE_DRIVER=local bo'lsa fayllar shu volume'da (S3 ishlatilsa — bo'sh qoladi)
+    volumes:
+      - uploads:/app/uploads
+
+  # Sayt (../frontend/app): statik fayllar + /api, /socket.io, /uploads proxy. Host nginx shu portga yo'naltiriladi.
+  web:
+    <<: *security
+    build:
+      context: ../frontend/app
+      args:
+        VITE_BOT_USERNAME: ${BOT_USERNAME:-taxizakRObot}
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8080}:80"
+    depends_on:
+      api: { condition: service_healthy }
+
+  # Telegram bot (../bot): kirish kodlari va bildirishnomalar. Tashqaridan port ochmaydi —
+  # Telegram bilan long polling, API bilan ichki tarmoq orqali gaplashadi.
+  bot:
+    <<: *security
+    build: ../bot
+    env_file: ../bot/.env
+    environment:
+      NODE_ENV: production
+      API_URL: http://api:4000/api/v1
+    depends_on:
+      api: { condition: service_healthy }
+    read_only: true
+
+  mysql:
+    <<: *security
+    image: mysql:8.4
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --default-time-zone=+00:00
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-abutax-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-abutax}
+      MYSQL_USER: ${MYSQL_USER:-abutax}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-abutax}
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    <<: *security
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    volumes:
+      - miniodata:/data
+
+  # Bucket'larni yaratadi: public (faqat o'qish) va private
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio: { condition: service_started }
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    entrypoint: >
+      sh -c "
+      until mc alias set local http://minio:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD; do sleep 1; done;
+      mc mb -p local/abutax-public local/abutax-private;
+      mc anonymous set download local/abutax-public;
+      exit 0;
+      "
+
+volumes:
+  mysqldata:
+  miniodata:
+  uploads:

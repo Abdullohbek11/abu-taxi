@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+[data-ab]{--primary:#FFC300;--primary-hover:#F5B800;--primary-pressed:#E0A800;--primary-soft:#FFF6D6;--soft-ink:#111111;--ink:#111111;--on-ink:#FFFFFF;--block:#111111;--text:#1A1A1A;--text-2:#6B6B6B;--text-3:#9A9A9A;--bg:#FFFFFF;--bg-alt:#F7F7F7;--surface:#FFFFFF;--border:#EBEBEB;--success:#22A06B;--success-soft:#E3F5EC;--road:#FFFFFF;--block-land:#EFEFEF;--sh-sm:0 1px 2px rgba(0,0,0,.06);--sh-md:0 8px 24px rgba(0,0,0,.08);--sh-lg:0 20px 48px rgba(0,0,0,.12);--glow:0 8px 24px rgba(255,195,0,.35)}
+[data-ab][data-theme="dark"]{--primary-soft:rgba(255,195,0,.12);--soft-ink:#FFC300;--ink:#F5F5F5;--on-ink:#111111;--block:#1A1A1A;--text:#F5F5F5;--text-2:#A3A3A3;--text-3:#7A7A7A;--bg:#0F0F0F;--bg-alt:#161616;--surface:#1E1E1E;--border:#2A2A2A;--success-soft:rgba(34,160,107,.16);--road:#222222;--block-land:#1B1B1B;--sh-md:0 8px 24px rgba(0,0,0,.4);--sh-lg:0 20px 48px rgba(0,0,0,.5)}
+html,body{margin:0;padding:0}
+body{-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+a:hover{color:inherit}
+input::placeholder{color:var(--text-3)}
+@keyframes abUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes abFade{from{opacity:0}to{opacity:1}}
+@keyframes abDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes abPulse{0%{transform:scale(1);opacity:.5}100%{transform:scale(2.6);opacity:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms !important;animation-delay:0ms !important;transition-duration:.01ms !important}}
+</style>
+</helmet>
+
+<div data-ab="" data-theme="{{ theme }}" style="background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:24px;min-height:100vh;transition:background 250ms,color 250ms">
+
+<!-- HEADER -->
+<header style="position:sticky;top:0;z-index:50;background:{{ headerBg }};box-shadow:{{ headerShadow }};transition:background 250ms,box-shadow 250ms">
+  <div style="max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,24px);height:72px;display:flex;align-items:center;gap:32px">
+    <a href="#top" style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <span style="width:36px;height:36px;border-radius:10px;background:var(--primary);color:#111;display:grid;place-items:center;font-family:Poppins,sans-serif;font-weight:700;font-size:20px">A</span>
+      <span style="font-family:Poppins,sans-serif;font-weight:700;font-size:20px;letter-spacing:-.3px;color:var(--ink)">Abu Tax</span>
+    </a>
+    <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+      <nav style="display:flex;gap:4px;font-size:15px;font-weight:500">
+        <a href="#qanday" style="padding:8px 14px;border-radius:999px;color:var(--text-2);transition:color 150ms,background 150ms" style-hover="color:var(--ink);background:var(--bg-alt)">Qanday ishlaydi</a>
+        <a href="#haydovchi" style="padding:8px 14px;border-radius:999px;color:var(--text-2);transition:color 150ms,background 150ms" style-hover="color:var(--ink);background:var(--bg-alt)">Haydovchilarga</a>
+        <a href="#yuk" style="padding:8px 14px;border-radius:999px;color:var(--text-2);transition:color 150ms,background 150ms" style-hover="color:var(--ink);background:var(--bg-alt)">Yuk tashish</a>
+        <a href="#aloqa" style="padding:8px 14px;border-radius:999px;color:var(--text-2);transition:color 150ms,background 150ms" style-hover="color:var(--ink);background:var(--bg-alt)">Aloqa</a>
+      </nav>
+    </sc-if>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+      <div style="display:flex;background:var(--bg-alt);border-radius:999px;padding:3px;font-size:13px;font-weight:600">
+        <button onClick="{{ setUz }}" style="border:0;cursor:pointer;height:30px;padding:0 12px;border-radius:999px;font:inherit;background:{{ uzBg }};color:{{ uzColor }};transition:all 250ms">UZ</button>
+        <button onClick="{{ setRu }}" style="border:0;cursor:pointer;height:30px;padding:0 12px;border-radius:999px;font:inherit;background:{{ ruBg }};color:{{ ruColor }};transition:all 250ms">RU</button>
+      </div>
+      <button style="border:0;cursor:pointer;height:44px;padding:0 22px;border-radius:999px;background:var(--ink);color:var(--on-ink);font:600 15px Inter,sans-serif;transition:transform 150ms cubic-bezier(.22,1,.36,1),opacity 150ms" style-hover="transform:translateY(-2px)" style-active="transform:scale(.97)">Kirish</button>
+      <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ toggleMenu }}" aria-label="Menyu" style="border:0;cursor:pointer;width:44px;height:44px;border-radius:999px;background:var(--bg-alt);color:var(--ink);display:grid;place-items:center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+        </button>
+      </sc-if>
+    </div>
+  </div>
+  <sc-if value="{{ menuShown }}" hint-placeholder-val="{{ false }}">
+    <nav style="display:flex;flex-direction:column;padding:8px 16px 16px;background:var(--bg);border-bottom:1px solid var(--border);font-weight:500;animation:abFade 250ms both">
+      <a href="#qanday" onClick="{{ toggleMenu }}" style="padding:14px 4px;border-bottom:1px solid var(--border)">Qanday ishlaydi</a>
+      <a href="#haydovchi" onClick="{{ toggleMenu }}" style="padding:14px 4px;border-bottom:1px solid var(--border)">Haydovchilarga</a>
+      <a href="#yuk" onClick="{{ toggleMenu }}" style="padding:14px 4px;border-bottom:1px solid var(--border)">Yuk tashish</a>
+      <a href="#aloqa" onClick="{{ toggleMenu }}" style="padding:14px 4px">Aloqa</a>
+    </nav>
+  </sc-if>
+</header>
+
+<!-- HERO -->
+<section id="top" data-screen-label="01 Hero" style="max-width:1200px;margin:0 auto;padding:clamp(24px,5vw,56px) clamp(16px,4vw,24px) clamp(48px,6vw,80px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:clamp(32px,5vw,56px);align-items:center">
+  <div style="display:flex;flex-direction:column;gap:24px;min-width:0">
+    <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 14px;border-radius:999px;background:var(--primary-soft);color:var(--soft-ink);font-size:13px;font-weight:600;animation:abFade 400ms both">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--success)"></span>Har kuni · 06:00 dan 22:00 gacha
+    </span>
+    <h1 style="margin:0;font-family:Poppins,sans-serif;font-weight:700;font-size:clamp(36px,5vw,56px);line-height:1.14;letter-spacing:-1px;color:var(--ink);text-wrap:balance">
+      <span style="display:inline-block;animation:abUp 700ms cubic-bezier(.22,1,.36,1) both;animation-delay:0ms">Andijon</span>
+      <span style="display:inline-block;animation:abUp 700ms cubic-bezier(.22,1,.36,1) both;animation-delay:60ms">–</span>
+      <span style="display:inline-block;animation:abUp 700ms cubic-bezier(.22,1,.36,1) both;animation-delay:120ms">Toshkent.</span>
+      <br>
+      <span style="display:inline-block;animation:abUp 700ms cubic-bezier(.22,1,.36,1) both;animation-delay:180ms;background:linear-gradient(transparent 58%,var(--primary) 58%,var(--primary) 92%,transparent 92%);padding:0 4px;margin-left:-4px">Vositachisiz.</span>
+    </h1>
+    <p style="margin:0;font-size:18px;line-height:28px;color:var(--text-2);max-width:500px;text-wrap:pretty;animation:abUp 700ms cubic-bezier(.22,1,.36,1) both;animation-delay:240ms">Haydovchi bilan to'g'ridan-to'g'ri bog'laning — dispetcher, komissiya va Telegram guruhlarisiz. Narx oldindan ma'lum, uydan olib ketiladi.</p>
+
+    <!-- search card -->
+    <div style="background:var(--surface);border-radius:28px;box-shadow:var(--sh-lg);border:1px solid var(--border);padding:clamp(16px,2.4vw,24px);display:flex;flex-direction:column;gap:16px;max-width:520px;animation:abUp 700ms cubic-bezier(.22,1,.36,1) both;animation-delay:440ms">
+      <div style="position:relative;display:grid;grid-template-columns:1fr 1fr;background:var(--bg-alt);border-radius:999px;padding:4px">
+        <span style="position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:var(--primary);transform:{{ tabX }};transition:transform 250ms cubic-bezier(.22,1,.36,1)"></span>
+        <button onClick="{{ tabPass }}" style="position:relative;border:0;background:transparent;cursor:pointer;height:44px;border-radius:999px;font:600 15px Inter,sans-serif;color:{{ passColor }};display:flex;align-items:center;justify-content:center;gap:8px;transition:color 250ms">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Yo'lovchi
+        </button>
+        <button onClick="{{ tabCargo }}" style="position:relative;border:0;background:transparent;cursor:pointer;height:44px;border-radius:999px;font:600 15px Inter,sans-serif;color:{{ cargoColor }};display:flex;align-items:center;justify-content:center;gap:8px;transition:color 250ms">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"></path><path d="M12 22V12"></path><path d="m3.3 7 8.7 5 8.7-5"></path></svg>Yuk
+        </button>
+      </div>
+
+      <!-- route block -->
+      <div style="position:relative;display:grid;grid-template-columns:28px 1fr 48px;gap:8px 8px;align-items:center">
+        <div style="grid-row:1 / span 2;align-self:stretch;display:flex;flex-direction:column;align-items:center;padding:22px 0">
+          <span style="width:12px;height:12px;border-radius:50%;border:3px solid var(--ink);box-sizing:border-box;flex-shrink:0"></span>
+          <span style="flex:1;width:0;border-left:2px dotted var(--text-3);margin:4px 0"></span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--primary)" stroke="#111" stroke-width="1.5" style="flex-shrink:0"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3" fill="#111"></circle></svg>
+        </div>
+        <label style="display:block;background:var(--bg-alt);border-radius:12px;padding:8px 16px;height:56px;box-sizing:border-box;overflow:hidden">
+          <span style="display:block;font-size:12px;line-height:16px;color:var(--text-3);font-weight:500">Qayerdan</span>
+          <span style="display:block;font-weight:600;color:var(--ink);transform:translateY({{ fromY }}px);opacity:{{ swapOpacity }};transition:{{ swapTrans }}">{{ from }}</span>
+        </label>
+        <button onClick="{{ swap }}" aria-label="Almashtirish" style="grid-row:1 / span 2;grid-column:3;width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center;box-shadow:var(--sh-sm);transform:rotate({{ rot }}deg);transition:transform 300ms cubic-bezier(.22,1,.36,1),background 150ms" style-hover="background:var(--primary-soft)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"></path><path d="M17 20V4"></path><path d="m3 8 4-4 4 4"></path><path d="M7 4v16"></path></svg>
+        </button>
+        <label style="display:block;grid-column:2;background:var(--bg-alt);border-radius:12px;padding:8px 16px;height:56px;box-sizing:border-box;overflow:hidden">
+          <span style="display:block;font-size:12px;line-height:16px;color:var(--text-3);font-weight:500">Qayerga</span>
+          <span style="display:block;font-weight:600;color:var(--ink);transform:translateY({{ toY }}px);opacity:{{ swapOpacity }};transition:{{ swapTrans }}">{{ to }}</span>
+        </label>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:8px">
+        <label style="display:flex;align-items:center;gap:12px;background:var(--bg-alt);border-radius:12px;padding:0 16px;height:56px;color:var(--text-2);cursor:pointer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+          <span style="display:flex;flex-direction:column"><span style="font-size:12px;line-height:16px;color:var(--text-3);font-weight:500">Sana</span><span style="font-weight:600;color:var(--ink);line-height:20px">Ertaga, 1-oktabr, Pay</span></span>
+        </label>
+        <sc-if value="{{ isPass }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:center;gap:12px;background:var(--bg-alt);border-radius:12px;padding:0 8px 0 16px;height:56px;color:var(--text-2)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span style="display:flex;flex-direction:column;flex:1"><span style="font-size:12px;line-height:16px;color:var(--text-3);font-weight:500">Yo'lovchilar</span><span style="font-weight:600;color:var(--ink);line-height:20px;font-variant-numeric:tabular-nums">{{ seats }} kishi</span></span>
+            <button onClick="{{ dec }}" aria-label="Kamaytirish" style="width:36px;height:36px;border-radius:50%;border:0;background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center;opacity:{{ decOp }};box-shadow:var(--sh-sm)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"></path></svg></button>
+            <button onClick="{{ inc }}" aria-label="Oshirish" style="width:36px;height:36px;border-radius:50%;border:0;background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center;opacity:{{ incOp }};box-shadow:var(--sh-sm)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5v14"></path></svg></button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isCargo }}" hint-placeholder-val="{{ false }}">
+          <label style="display:flex;align-items:center;gap:12px;background:var(--bg-alt);border-radius:12px;padding:0 16px;height:56px;color:var(--text-2);animation:abFade 250ms both">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"></circle><path d="M6.5 8a2 2 0 0 0-1.9 1.46L2.1 18.5A2 2 0 0 0 4 21h16a2 2 0 0 0 1.93-2.54L19.4 9.5A2 2 0 0 0 17.48 8Z"></path></svg>
+            <span style="display:flex;flex-direction:column;flex:1;min-width:0"><span style="font-size:12px;line-height:16px;color:var(--text-3);font-weight:500">Og'irlik</span>
+              <span style="display:flex;align-items:baseline;gap:4px"><input value="{{ kg }}" onChange="{{ setKg }}" inputmode="numeric" placeholder="120" style="border:0;background:transparent;outline:none;padding:0;width:100%;min-width:0;font:600 16px/20px Inter,sans-serif;color:var(--ink)"><span style="font-weight:600;color:var(--text-2)">kg</span></span>
+            </span>
+          </label>
+        </sc-if>
+      </div>
+
+      <button style="border:0;cursor:pointer;height:56px;border-radius:999px;background:var(--primary);color:#111;font:600 16px Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform 150ms cubic-bezier(.22,1,.36,1),box-shadow 150ms,background 150ms" style-hover="transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,195,0,.35);background:#F5B800" style-active="transform:scale(.97);background:#E0A800">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>{{ searchLabel }}
+      </button>
+    </div>
+  </div>
+
+  <!-- map -->
+  <div style="position:relative;min-width:0;border-radius:28px;overflow:hidden;background:var(--bg-alt);aspect-ratio:1 / 1.02;max-height:640px;border:1px solid var(--border);animation:abFade 800ms both;animation-delay:100ms">
+    <svg viewBox="0 0 560 572" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; width: 100%; height: 100%; display: block; left: -7px; top: -75px">
+      <defs>
+        <pattern id="abgrid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="var(--border)" stroke-width="1"></path></pattern>
+        <path id="abroute" d="M470 404 C 430 392, 408 360, 372 352 S 318 318, 292 300 S 250 262, 214 262 S 150 220, 120 170"></path>
+      </defs>
+      <rect width="560" height="572" fill="url(#abgrid)" opacity=".7"></rect>
+      <path d="M-20 470 C 120 430, 260 470, 580 390" fill="none" stroke="var(--road)" stroke-width="18"></path>
+      <path d="M40 -20 C 80 120, 60 300, 150 600" fill="none" stroke="var(--road)" stroke-width="14"></path>
+      <path d="M600 120 C 460 150, 380 90, 260 60 S 60 70, -20 40" fill="none" stroke="var(--road)" stroke-width="12"></path>
+      <path d="M520 -20 C 500 160, 540 300, 480 600" fill="none" stroke="var(--road)" stroke-width="10"></path>
+      <rect x="300" y="420" width="120" height="70" rx="14" fill="var(--block-land)"></rect>
+      <rect x="170" y="330" width="90" height="60" rx="14" fill="var(--block-land)"></rect>
+      <rect x="330" y="160" width="130" height="80" rx="14" fill="var(--block-land)"></rect>
+      <path d="M470 404 C 430 392, 408 360, 372 352 S 318 318, 292 300 S 250 262, 214 262 S 150 220, 120 170" fill="none" stroke="var(--ink)" stroke-width="6" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="animation:abDraw 1.2s cubic-bezier(.22,1,.36,1) both;animation-delay:300ms"></path>
+      <path d="M470 404 C 430 392, 408 360, 372 352 S 318 318, 292 300 S 250 262, 214 262 S 150 220, 120 170" fill="none" stroke="var(--bg-alt)" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 10" style="animation:abFade 400ms both;animation-delay:1400ms"></path>
+      <sc-if value="{{ showCar }}" hint-placeholder-val="{{ true }}">
+        <g style="animation:abFade 400ms both;animation-delay:1500ms">
+          <g>
+            <animateMotion dur="6s" repeatCount="indefinite" rotate="auto-reverse" begin="1.5s"><mpath href="#abroute"></mpath></animateMotion>
+            <rect x="-15" y="-9" width="30" height="18" rx="6" fill="#FFC300" stroke="#111" stroke-width="2"></rect>
+            <rect x="-6" y="-6" width="9" height="12" rx="2" fill="#111"></rect>
+            <rect x="7" y="-5" width="4" height="10" rx="1.5" fill="#111" opacity=".55"></rect>
+          </g>
+        </g>
+      </sc-if>
+      <circle cx="120" cy="170" r="10" fill="#FFC300" style="transform-origin:120px 170px;animation:abPulse 1.8s ease-out infinite"></circle>
+      <circle cx="470" cy="404" r="9" fill="var(--ink)"></circle>
+      <circle cx="470" cy="404" r="4" fill="var(--bg-alt)"></circle>
+      <path d="M120 176 c 0 0 -14 -12 -14 -22 a14 14 0 0 1 28 0 c 0 10 -14 22 -14 22z" fill="#FFC300" stroke="#111" stroke-width="2" transform="translate(0 -10)"></path>
+      <circle cx="120" cy="144" r="4.5" fill="#111"></circle>
+    </svg>
+    <div style="position:absolute;left:6%;top:36%;display:flex;flex-direction:column;background:var(--surface);border-radius:12px;padding:8px 12px;box-shadow:var(--sh-md);animation:abUp 600ms both;animation-delay:1200ms">
+      <span style="font-family:Poppins,sans-serif;font-weight:600;font-size:15px;color:var(--ink)">Toshkent</span><span style="font-size:12px;line-height:16px;color:var(--text-2)">Kelish ~11:10</span>
+    </div>
+    <div style="position:absolute;right:6%;top:60%;display:flex;flex-direction:column;background:var(--ink);color:var(--on-ink);border-radius:12px;padding:8px 12px;box-shadow:var(--sh-md);animation:abUp 600ms both;animation-delay:900ms">
+      <span style="font-family:Poppins,sans-serif;font-weight:600;font-size:15px">Andijon</span><span style="font-size:12px;line-height:16px;opacity:.7">Jo'nash 06:00</span>
+    </div>
+    <sc-if value="{{ showMapCard }}" hint-placeholder-val="{{ true }}">
+      <div style="position:absolute;left:4%;right:4%;bottom:4%;background:var(--surface);border-radius:20px;box-shadow:var(--sh-lg);padding:16px;display:flex;align-items:center;gap:12px;animation:abUp 700ms cubic-bezier(.22,1,.36,1) both;animation-delay:1700ms">
+        <span style="width:48px;height:48px;border-radius:50%;background:var(--primary-soft);color:var(--soft-ink);display:grid;place-items:center;font-family:Poppins,sans-serif;font-weight:700;flex-shrink:0">BA</span>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+          <span style="display:flex;align-items:center;gap:6px;font-weight:600;color:var(--ink)">Bahodir A. <span style="display:inline-flex;align-items:center;gap:2px;font-size:13px;color:var(--text-2);font-weight:500"><svg width="13" height="13" viewBox="0 0 24 24" fill="#FFC300"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>4.9</span></span>
+          <span style="font-size:13px;line-height:18px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Cobalt, oq · 01 A 7** · 3 o'rin bo'sh</span>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-family:Poppins,sans-serif;font-weight:700;font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums">150 000</div>
+          <div style="font-size:12px;line-height:16px;color:var(--text-2)">so'm / kishi</div>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section ref="{{ trustRef }}" style="max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,24px)">
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+    <div style="padding:clamp(20px,3vw,32px) 0;display:flex;flex-direction:column;gap:4px">
+      <span style="font-family:Poppins,sans-serif;font-weight:700;font-size:clamp(26px,4vw,40px);line-height:1.2;color:var(--ink);font-variant-numeric:tabular-nums">{{ c1 }}+</span>
+      <span style="font-size:14px;color:var(--text-2)">safar</span>
+    </div>
+    <div style="padding:clamp(20px,3vw,32px) 0 clamp(20px,3vw,32px) clamp(12px,3vw,32px);border-left:1px solid var(--border);display:flex;flex-direction:column;gap:4px">
+      <span style="font-family:Poppins,sans-serif;font-weight:700;font-size:clamp(26px,4vw,40px);line-height:1.2;color:var(--ink);font-variant-numeric:tabular-nums">{{ c2 }}+</span>
+      <span style="font-size:14px;color:var(--text-2)">haydovchi</span>
+    </div>
+    <div style="padding:clamp(20px,3vw,32px) 0 clamp(20px,3vw,32px) clamp(12px,3vw,32px);border-left:1px solid var(--border);display:flex;flex-direction:column;gap:4px">
+      <span style="font-family:Poppins,sans-serif;font-weight:700;font-size:clamp(26px,4vw,40px);line-height:1.2;color:var(--ink);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px">{{ c3 }}<svg width="0.7em" height="0.7em" viewBox="0 0 24 24" fill="#FFC300"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></span>
+      <span style="font-size:14px;color:var(--text-2)">o'rtacha reyting</span>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section id="qanday" data-screen-label="02 Qanday ishlaydi" style="max-width:1200px;margin:0 auto;padding:clamp(64px,8vw,96px) clamp(16px,4vw,24px) 0;display:flex;flex-direction:column;gap:clamp(24px,4vw,48px)">
+  <div data-reveal="0" style="display:flex;flex-direction:column;gap:12px;max-width:620px">
+    <span style="font-size:12px;line-height:16px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-2)">Qanday ishlaydi</span>
+    <h2 style="margin:0;font-family:Poppins,sans-serif;font-weight:700;font-size:clamp(24px,3.2vw,32px);line-height:1.25;color:var(--ink);text-wrap:balance">Uch qadam — va siz yo'ldasiz</h2>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px">
+    <div data-reveal="0"><div style="height:100%;box-sizing:border-box;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:12px;transition:transform 250ms cubic-bezier(.22,1,.36,1),box-shadow 250ms" style-hover="transform:translateY(-4px);box-shadow:var(--sh-lg)">
+      <span style="width:48px;height:48px;border-radius:999px;background:var(--primary);color:#111;display:grid;place-items:center;font-family:Poppins,sans-serif;font-weight:700;font-size:18px">1</span>
+      <h3 style="margin:8px 0 0;font-family:Poppins,sans-serif;font-weight:600;font-size:22px;line-height:30px;color:var(--ink)">Yo'nalishni tanlang</h3>
+      <p style="margin:0;color:var(--text-2);text-wrap:pretty">Andijondan Toshkentga yoki aksincha. Sana va necha kishi ekaningizni belgilang.</p>
+    </div></div>
+    <div data-reveal="80"><div style="height:100%;box-sizing:border-box;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:12px;transition:transform 250ms cubic-bezier(.22,1,.36,1),box-shadow 250ms" style-hover="transform:translateY(-4px);box-shadow:var(--sh-lg)">
+      <span style="width:48px;height:48px;border-radius:999px;background:var(--primary);color:#111;display:grid;place-items:center;font-family:Poppins,sans-serif;font-weight:700;font-size:18px">2</span>
+      <h3 style="margin:8px 0 0;font-family:Poppins,sans-serif;font-weight:600;font-size:22px;line-height:30px;color:var(--ink)">Haydovchini tanlang</h3>
+      <p style="margin:0;color:var(--text-2);text-wrap:pretty">Reyting, mashina, jo'nash vaqti va narxni solishtiring — hammasi bir sahifada.</p>
+    </div></div>
+    <div data-reveal="160"><div style="height:100%;box-sizing:border-box;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:12px;transition:transform 250ms cubic-bezier(.22,1,.36,1),box-shadow 250ms" style-hover="transform:translateY(-4px);box-shadow:var(--sh-lg)">
+      <span style="width:48px;height:48px;border-radius:999px;background:var(--primary);color:#111;display:grid;place-items:center;font-family:Poppins,sans-serif;font-weight:700;font-size:18px">3</span>
+      <h3 style="margin:8px 0 0;font-family:Poppins,sans-serif;font-weight:600;font-size:22px;line-height:30px;color:var(--ink)">To'g'ridan-to'g'ri bog'laning</h3>
+      <p style="margin:0;color:var(--text-2);text-wrap:pretty">Band qiling va haydovchiga qo'ng'iroq qiling yoki Telegramda yozing. O'rtada hech kim yo'q.</p>
+    </div></div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section data-screen-label="03 Afzalliklar" style="max-width:1200px;margin:0 auto;padding:clamp(64px,8vw,96px) clamp(16px,4vw,24px) 0">
+  <div style="background:var(--bg-alt);border-radius:28px;padding:clamp(24px,5vw,56px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(24px,4vw,48px);align-items:start">
+    <div data-reveal="0" style="display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;line-height:16px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-2)">Nega Abu Tax</span>
+      <h2 style="margin:0;font-family:Poppins,sans-serif;font-weight:700;font-size:clamp(24px,3.2vw,32px);line-height:1.25;color:var(--ink);text-wrap:balance">Dispetcherga qo'ng'iroq qilish, guruhda kutish shart emas</h2>
+      <p style="margin:0;font-size:18px;line-height:28px;color:var(--text-2);text-wrap:pretty">Siz haydovchini ko'rasiz, haydovchi sizni ko'radi. Kelishuv ikkingiz o'rtasida.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px">
+      <div data-reveal="0"><div style="height:100%;box-sizing:border-box;background:var(--surface);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:12px">
+        <span style="width:44px;height:44px;border-radius:12px;background:var(--primary-soft);color:var(--soft-ink);display:grid;place-items:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></span>
+        <h4 style="margin:0;font-family:Poppins,sans-serif;font-weight:600;font-size:18px;line-height:26px;color:var(--ink)">Vositachisiz</h4>
+        <p style="margin:0;font-size:14px;line-height:20px;color:var(--text-2)">Haydovchining raqami sizda. Komissiya va ustama yo'q.</p>
+      </div></div>
+      <div data-reveal="80"><div style="height:100%;box-sizing:border-box;background:var(--surface);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:12px">
+        <span style="width:44px;height:44px;border-radius:12px;background:var(--primary-soft);color:var(--soft-ink);display:grid;place-items:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg></span>
+        <h4 style="margin:0;font-family:Poppins,sans-serif;font-weight:600;font-size:18px;line-height:26px;color:var(--ink)">Narx oldindan ma'lum</h4>
+        <p style="margin:0;font-size:14px;line-height:20px;color:var(--text-2)">Bir kishi narxi e'londa yozilgan. Yo'lda savdolashish yo'q.</p>
+      </div></div>
+      <div data-reveal="160"><div style="height:100%;box-sizing:border-box;background:var(--surface);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:12px">
+        <span style="width:44px;height:44px;border-radius:12px;background:var(--primary-soft);color:var(--soft-ink);display:grid;place-items:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg></span>
+        <h4 style="margin:0;font-family:Poppins,sans-serif;font-weight:600;font-size:18px;line-height:26px;color:var(--ink)">Tekshirilgan haydovchilar</h4>
+        <p style="margin:0;font-size:14px;line-height:20px;color:var(--text-2)">Guvohnoma va texpasport tekshiriladi, reyting ochiq.</p>
+      </div></div>
+      <div data-reveal="240"><div style="height:100%;box-sizing:border-box;background:var(--surface);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:12px">
+        <span style="width:44px;height:44px;border-radius:12px;background:var(--primary-soft);color:var(--soft-ink);display:grid;place-items:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="M9 22V12h6v10"></path></svg></span>
+        <h4 style="margin:0;font-family:Poppins,sans-serif;font-weight:600;font-size:18px;line-height:26px;color:var(--ink)">Uydan olib ketish</h4>
+        <p style="margin:0;font-size:14px;line-height:20px;color:var(--text-2)">Ko'p haydovchilar eshigingiz oldidan oladi — bekatga borish shart emas.</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CARGO -->
+<section id="yuk" data-screen-label="04 Yuk tashish" style="max-width:1200px;margin:0 auto;padding:clamp(64px,8vw,96px) clamp(16px,4vw,24px) 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(32px,5vw,64px);align-items:center">
+  <div data-reveal="0" style="display:flex;flex-direction:column;gap:16px">
+    <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:999px;background:var(--primary-soft);color:var(--soft-ink);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Yuk tashish</span>
+    <h2 style="margin:0;font-family:Poppins,sans-serif;font-weight:700;font-size:clamp(24px,3.2vw,32px);line-height:1.25;color:var(--ink);text-wrap:balance">Mebeldan tortib bir quti mevagacha — shu kuniyoq yetib boradi</h2>
+    <p style="margin:0;font-size:18px;line-height:28px;color:var(--text-2);text-wrap:pretty">Yuk turi va og'irligini yozing, taklif narxingizni belgilang. Yo'lga chiqayotgan haydovchilar sizga o'z narxini yuboradi — eng qulayini qabul qilasiz.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <span style="height:36px;padding:0 16px;border-radius:999px;background:var(--bg-alt);display:inline-flex;align-items:center;font-size:14px;font-weight:500">Mebel</span>
+      <span style="height:36px;padding:0 16px;border-radius:999px;background:var(--bg-alt);display:inline-flex;align-items:center;font-size:14px;font-weight:500">Maishiy texnika</span>
+      <span style="height:36px;padding:0 16px;border-radius:999px;background:var(--bg-alt);display:inline-flex;align-items:center;font-size:14px;font-weight:500">Oziq-ovqat</span>
+      <span style="height:36px;padding:0 16px;border-radius:999px;background:var(--bg-alt);display:inline-flex;align-items:center;font-size:14px;font-weight:500">Qurilish</span>
+      <span style="height:36px;padding:0 16px;border-radius:999px;background:var(--bg-alt);display:inline-flex;align-items:center;font-size:14px;font-weight:500">Posilka</span>
+    </div>
+    <button style="align-self:flex-start;margin-top:8px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;height:52px;padding:0 28px;border-radius:999px;font:600 16px Inter,sans-serif;display:flex;align-items:center;gap:10px;transition:transform 150ms cubic-bezier(.22,1,.36,1),background 150ms,color 150ms" style-hover="transform:translateY(-2px);background:var(--ink);color:var(--on-ink)" style-active="transform:scale(.97)">Yuk jo'natish<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button>
+  </div>
+  <div data-reveal="120" style="position:relative;padding:clamp(16px,4vw,40px);background:var(--bg-alt);border-radius:28px">
+    <div style="background:var(--surface);border-radius:20px;box-shadow:var(--sh-md);padding:20px;display:flex;flex-direction:column;gap:16px;transition:transform 250ms cubic-bezier(.22,1,.36,1),box-shadow 250ms" style-hover="transform:translateY(-4px);box-shadow:var(--sh-lg)">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="width:56px;height:56px;border-radius:50%;background:var(--primary-soft);color:var(--soft-ink);display:grid;place-items:center;font-family:Poppins,sans-serif;font-weight:700;font-size:18px;flex-shrink:0">SR</span>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;font-weight:600;color:var(--ink)">Sardor R.<span style="display:inline-flex;align-items:center;gap:2px;font-size:13px;color:var(--text-2);font-weight:500"><svg width="13" height="13" viewBox="0 0 24 24" fill="#FFC300"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>4.8 · 212 safar</span></div>
+          <div style="font-size:14px;line-height:20px;color:var(--text-2)">Labo, oq · 60 L 4**</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:12px;line-height:16px;color:var(--text-3)">Jo'nash</div>
+          <div style="font-family:Poppins,sans-serif;font-weight:700;font-size:22px;line-height:28px;color:var(--ink);font-variant-numeric:tabular-nums">14:00</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <span style="height:26px;padding:0 10px;border-radius:999px;background:var(--success-soft);color:var(--success);display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Tasdiqlangan haydovchi</span>
+        <span style="height:26px;padding:0 10px;border-radius:999px;background:var(--primary-soft);color:var(--soft-ink);display:inline-flex;align-items:center;font-size:12px;font-weight:600">Yuk oladi</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+        <div style="background:var(--bg-alt);border-radius:12px;padding:10px 12px"><div style="font-size:12px;line-height:16px;color:var(--text-3)">Sig'im</div><div style="font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums">800 kg</div></div>
+        <div style="background:var(--bg-alt);border-radius:12px;padding:10px 12px"><div style="font-size:12px;line-height:16px;color:var(--text-3)">Kuzov</div><div style="font-weight:600;color:var(--ink)">2.2 × 1.4 m</div></div>
+        <div style="background:var(--bg-alt);border-radius:12px;padding:10px 12px"><div style="font-size:12px;line-height:16px;color:var(--text-3)">Bo'sh joy</div><div style="font-weight:600;color:var(--ink)">~60%</div></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:4px;border-top:1px solid var(--border)">
+        <div style="padding-top:12px"><div style="font-size:12px;line-height:16px;color:var(--text-3)">Andijon → Toshkent, bugun</div><div style="font-family:Poppins,sans-serif;font-weight:700;font-size:22px;line-height:30px;color:var(--ink);font-variant-numeric:tabular-nums">350 000 so'm<span style="font-family:Inter,sans-serif;font-weight:500;font-size:14px;color:var(--text-2)"> dan</span></div></div>
+        <button style="margin-top:12px;border:0;cursor:pointer;height:44px;padding:0 20px;border-radius:999px;background:var(--primary);color:#111;font:600 15px Inter,sans-serif;transition:transform 150ms,box-shadow 150ms" style-hover="transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,195,0,.35)" style-active="transform:scale(.97)">Taklif yuborish</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DRIVER CTA -->
+<section id="haydovchi" data-screen-label="05 Haydovchimisiz" style="max-width:1248px;margin:0 auto;padding:clamp(64px,8vw,96px) clamp(0px,2vw,24px) 0">
+  <div data-reveal="0" style="background:var(--block);color:#FFFFFF;border-radius:clamp(0px,2.4vw,28px);padding:clamp(40px,6vw,72px) clamp(16px,5vw,64px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(32px,5vw,56px);align-items:center;position:relative;overflow:hidden">
+    <div style="display:flex;flex-direction:column;gap:20px;position:relative">
+      <h2 style="margin:0;font-family:Poppins,sans-serif;font-weight:700;font-size:clamp(30px,4vw,40px);line-height:1.2;letter-spacing:-.5px;text-wrap:balance">Haydovchimisiz? <span style="color:#FFC300">Yo'lovchini o'zingiz toping.</span></h2>
+      <p style="margin:0;font-size:18px;line-height:28px;color:#A3A3A3;max-width:480px;text-wrap:pretty">Safarni 2 daqiqada e'lon qiling. Dispetcherga foiz bermaysiz — butun daromad o'zingizda qoladi.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:4px">
+        <button style="border:0;cursor:pointer;height:52px;padding:0 28px;border-radius:999px;background:#FFC300;color:#111;font:600 16px Inter,sans-serif;transition:transform 150ms cubic-bezier(.22,1,.36,1),box-shadow 150ms" style-hover="transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,195,0,.35)" style-active="transform:scale(.97)">Haydovchi bo'lish</button>
+        <button style="border:1.5px solid rgba(255,255,255,.35);cursor:pointer;height:52px;padding:0 28px;border-radius:999px;background:transparent;color:#FFFFFF;font:600 16px Inter,sans-serif;transition:border-color 150ms" style-hover="border-color:#FFFFFF">Batafsil</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;position:relative">
+      <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:20px"><div style="font-family:Poppins,sans-serif;font-weight:700;font-size:clamp(24px,3vw,32px);line-height:1.2;color:#FFC300">0%</div><div style="font-size:14px;line-height:20px;color:#A3A3A3;margin-top:4px">komissiya</div></div>
+      <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:20px"><div style="font-family:Poppins,sans-serif;font-weight:700;font-size:clamp(24px,3vw,32px);line-height:1.2">2 daq</div><div style="font-size:14px;line-height:20px;color:#A3A3A3;margin-top:4px">safar e'lon qilish</div></div>
+      <div style="grid-column:1 / -1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:20px;display:flex;align-items:center;gap:16px">
+        <span style="width:44px;height:44px;border-radius:12px;background:#FFC300;color:#111;display:grid;place-items:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"></path><path d="M12 22V12"></path><path d="m3.3 7 8.7 5 8.7-5"></path></svg></span>
+        <div><div style="font-weight:600">Bo'sh yukxonadan ham daromad</div><div style="font-size:14px;line-height:20px;color:#A3A3A3">"Yuk ham olaman" belgisini yoqing — posilka va yuk so'rovlari keladi.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section data-screen-label="06 Sharhlar" style="max-width:1200px;margin:0 auto;padding:clamp(64px,8vw,96px) clamp(16px,4vw,24px) 0;display:flex;flex-direction:column;gap:clamp(24px,4vw,40px)">
+  <div data-reveal="0" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;line-height:16px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-2)">Sharhlar</span>
+      <h2 style="margin:0;font-family:Poppins,sans-serif;font-weight:700;font-size:clamp(24px,3.2vw,32px);line-height:1.25;color:var(--ink)">Yo'lovchilar nima deydi</h2>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onClick="{{ prev }}" aria-label="Oldingi" style="width:48px;height:48px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:background 150ms" style-hover="background:var(--bg-alt)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+      <button onClick="{{ next }}" aria-label="Keyingi" style="width:48px;height:48px;border-radius:50%;border:0;background:var(--ink);color:var(--on-ink);cursor:pointer;display:grid;place-items:center;transition:transform 150ms" style-active="transform:scale(.94)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+    </div>
+  </div>
+  <div ref="{{ carRef }}" style="display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;margin:0 calc(-1 * clamp(16px,4vw,24px));padding:4px clamp(16px,4vw,24px) 24px">
+    <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="3">
+      <div style="flex:0 0 min(360px,84%);scroll-snap-align:start;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box">
+        <div style="display:flex;gap:2px">
+          <sc-for list="{{ r.stars }}" as="s"><svg width="16" height="16" viewBox="0 0 24 24" fill="#FFC300"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></sc-for>
+        </div>
+        <p style="margin:0;flex:1;color:var(--text);text-wrap:pretty">{{ r.text }}</p>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="width:44px;height:44px;border-radius:50%;background:var(--bg-alt);color:var(--ink);display:grid;place-items:center;font-family:Poppins,sans-serif;font-weight:600;font-size:15px">{{ r.init }}</span>
+          <div><div style="font-weight:600;color:var(--ink)">{{ r.name }}</div><div style="font-size:13px;line-height:18px;color:var(--text-2)">{{ r.meta }}</div></div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section data-screen-label="07 FAQ" style="max-width:1200px;margin:0 auto;padding:clamp(48px,6vw,72px) clamp(16px,4vw,24px) clamp(64px,8vw,96px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:clamp(24px,4vw,64px);align-items:start">
+  <div data-reveal="0" style="display:flex;flex-direction:column;gap:12px">
+    <span style="font-size:12px;line-height:16px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-2)">Savollar</span>
+    <h2 style="margin:0;font-family:Poppins,sans-serif;font-weight:700;font-size:clamp(24px,3.2vw,32px);line-height:1.25;color:var(--ink)">Ko'p so'raladigan savollar</h2>
+    <p style="margin:0;color:var(--text-2)">Javob topmadingizmi? Telegramda yozing — <a href="#aloqa" style="color:var(--ink);font-weight:600;text-decoration:underline;text-decoration-color:#FFC300;text-decoration-thickness:2px;text-underline-offset:3px">@abutax_uz</a></p>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="5">
+      <div style="background:{{ f.bg }};border-radius:20px;transition:background 250ms">
+        <button onClick="{{ f.toggle }}" style="width:100%;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;gap:16px;padding:20px 20px 20px 24px;text-align:left;font:600 17px/26px Poppins,sans-serif;color:var(--ink)">
+          <span style="flex:1">{{ f.q }}</span>
+          <span style="width:36px;height:36px;border-radius:50%;background:{{ f.iconBg }};color:#111;display:grid;place-items:center;flex-shrink:0;transform:rotate({{ f.rot }}deg);transition:transform 250ms cubic-bezier(.22,1,.36,1),background 250ms"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5v14"></path></svg></span>
+        </button>
+        <div style="display:grid;grid-template-rows:{{ f.rows }};transition:grid-template-rows 300ms cubic-bezier(.22,1,.36,1)">
+          <div style="overflow:hidden"><p style="margin:0;padding:0 72px 20px 24px;color:var(--text-2);text-wrap:pretty">{{ f.a }}</p></div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="aloqa" style="background:#111111;color:#FFFFFF">
+  <div style="max-width:1200px;margin:0 auto;padding:clamp(48px,6vw,72px) clamp(16px,4vw,24px) 32px;display:flex;flex-direction:column;gap:48px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:32px">
+      <div style="display:flex;flex-direction:column;gap:16px;grid-column:span 1">
+        <span style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:10px;background:#FFC300;color:#111;display:grid;place-items:center;font-family:Poppins,sans-serif;font-weight:700;font-size:20px">A</span><span style="font-family:Poppins,sans-serif;font-weight:700;font-size:20px">Abu Tax</span></span>
+        <p style="margin:0;font-size:14px;line-height:20px;color:#A3A3A3;max-width:260px">Andijon ⇄ Toshkent. Yo'lovchi va yuk — haydovchi bilan to'g'ridan-to'g'ri.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:15px">
+        <span style="font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#6B6B6B;margin-bottom:4px">Xizmatlar</span>
+        <a href="#top" style="color:#D4D4D4" style-hover="color:#FFFFFF">Yo'lovchi tashish</a>
+        <a href="#yuk" style="color:#D4D4D4" style-hover="color:#FFFFFF">Yuk tashish</a>
+        <a href="#haydovchi" style="color:#D4D4D4" style-hover="color:#FFFFFF">Haydovchilarga</a>
+        <a href="#qanday" style="color:#D4D4D4" style-hover="color:#FFFFFF">Qanday ishlaydi</a>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:15px">
+        <span style="font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#6B6B6B;margin-bottom:4px">Aloqa</span>
+        <a href="tel:+998901234567" style="color:#FFFFFF;font-family:Poppins,sans-serif;font-weight:600;font-size:18px;font-variant-numeric:tabular-nums">+998 (90) 123-45-67</a>
+        <a href="#aloqa" style="display:inline-flex;align-items:center;gap:8px;color:#D4D4D4" style-hover="color:#FFFFFF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>@abutax_uz</a>
+        <span style="color:#A3A3A3;font-size:14px">Har kuni 06:00 – 23:00</span>
+      </div>
+      
+    </div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-top:24px;border-top:1px solid #2A2A2A;font-size:13px;color:#6B6B6B">
+      <span>© 2026 Abu Tax</span>
+      <span>Foydalanish shartlari · Maxfiylik siyosati</span>
+    </div>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;dark&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;defaultTab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;pass&quot;,&quot;cargo&quot;],&quot;default&quot;:&quot;pass&quot;,&quot;tsType&quot;:&quot;'pass'|'cargo'&quot;},&quot;showMapCard&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { tab: null, from: 'Andijon', to: 'Toshkent', fromY: 0, toY: 0, swapping: false, instant: false, rot: 0, seats: 1, kg: '', scrolled: false, isMobile: false, menuOpen: false, lang: 'UZ', faq: 0, c: [0, 0, 0], reduced: false };
+  trustRef = React.createRef();
+  carRef = React.createRef();
+
+  componentDidMount() {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.onScroll = () => {
+      const s = window.scrollY > 8; if (s !== this.state.scrolled) this.setState({ scrolled: s });
+      if (this.io) document.querySelectorAll('[data-reveal]').forEach(el => {
+        if (el.style.opacity === '0' && el.getBoundingClientRect().top < window.innerHeight) { el.style.transitionDelay = '0ms'; el.style.opacity = '1'; el.style.transform = 'none'; this.io.unobserve(el); }
+      });
+    };
+    this.onResize = () => { const m = window.innerWidth < 900; if (m !== this.state.isMobile) this.setState({ isMobile: m, menuOpen: false }); };
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    window.addEventListener('resize', this.onResize);
+    this.setState({ reduced }, () => { this.onResize(); this.onScroll(); });
+    setTimeout(() => this.setupReveal(reduced), 60);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.onScroll);
+    window.removeEventListener('resize', this.onResize);
+    this.io && this.io.disconnect(); this.tio && this.tio.disconnect();
+    cancelAnimationFrame(this.raf);
+  }
+  setupReveal(reduced) {
+    const ease = 'cubic-bezier(.22,1,.36,1)';
+    this.io = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      el.style.transitionDelay = (+el.dataset.reveal || 0) + 'ms';
+      el.style.opacity = '1'; el.style.transform = 'none';
+      this.io.unobserve(el);
+    }), { threshold: 0.12 });
+    document.querySelectorAll('[data-reveal]').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.9) return;
+      el.style.opacity = '0';
+      el.style.transform = reduced ? 'none' : 'translateY(24px)';
+      el.style.transition = `opacity 600ms ${ease}, transform 600ms ${ease}`;
+      this.io.observe(el);
+    });
+    if (this.trustRef.current) {
+      this.tio = new IntersectionObserver(es => { if (es[0].isIntersecting) { this.countUp(); this.tio.disconnect(); } }, { threshold: 0.4 });
+      this.tio.observe(this.trustRef.current);
+    }
+  }
+  countUp() {
+    const t0 = performance.now(), T = [1200, 300, 4.8];
+    const step = now => {
+      const p = Math.min(1, (now - t0) / 1000), k = 1 - Math.pow(1 - p, 3);
+      this.setState({ c: T.map(v => v * k) });
+      if (p < 1) this.raf = requestAnimationFrame(step);
+    };
+    this.raf = requestAnimationFrame(step);
+  }
+  swap = () => {
+    if (this.state.swapping) return;
+    const d = this.state.reduced ? 0 : 64;
+    this.setState(s => ({ rot: s.rot + 180, fromY: d, toY: -d, swapping: true, instant: false }));
+    setTimeout(() => {
+      this.setState(s => ({ from: s.to, to: s.from, fromY: 0, toY: 0, instant: true }));
+      requestAnimationFrame(() => requestAnimationFrame(() => this.setState({ instant: false, swapping: false })));
+    }, 300);
+  };
+  scrollCar(dir) {
+    const el = this.carRef.current; if (!el) return;
+    const card = el.firstElementChild; const w = card ? card.getBoundingClientRect().width + 16 : 320;
+    el.scrollBy({ left: dir * w, behavior: 'smooth' });
+  }
+  renderVals() {
+    const s = this.state, p = this.props;
+    const tab = s.tab || p.defaultTab || 'pass';
+    const dark = !!p.dark;
+    const isPass = tab === 'pass';
+    const fmt = n => Math.round(n).toLocaleString('ru-RU').replace(/\u00a0/g, ' ');
+    const reviews = [
+      { name: 'Dilnoza Karimova', meta: 'Andijon → Toshkent · sentabr', init: 'DK', n: 5, text: "Oldin guruhlarda soatlab kutardim. Bu yerda kechqurun band qildim, ertalab 5:40 da uyimning oldida turgan ekan." },
+      { name: 'Jasur Tursunov', meta: 'Toshkent → Andijon · avgust', init: 'JT', n: 5, text: "Narx oldindan yozilgan, yo'lda hech qanday qo'shimcha so'rashmadi. Haydovchi Cobaltda, konditsioner ishlaydi." },
+      { name: 'Malika Yo\'ldosheva', meta: 'Yuk jo\'natuvchi · sentabr', init: 'MY', n: 5, text: "Toshkentdagi qizimga muzlatgich jo'natdim. Uchta haydovchi taklif yubordi, eng arzonini tanladim — kechqurun yetib bordi." },
+      { name: 'Otabek Qodirov', meta: 'Andijon → Toshkent · iyul', init: 'OQ', n: 4, text: "Kamchiqda biroz tirband bo'ldik, lekin haydovchi Telegramda yozib turdi. Keyingi safar ham shu yerdan olaman." },
+      { name: 'Nodira Hasanova', meta: 'Toshkent → Andijon · sentabr', init: 'NH', n: 5, text: "Onam bilan ikki kishi bordik. Oldingi o'rindiqni oldindan so'rab qo'ydim, muammosiz berishdi." }
+    ].map(r => ({ ...r, stars: Array.from({ length: r.n }, (_, i) => i) }));
+    const faqSrc = [
+      ['Abu Tax komissiya oladimi?', "Yo'q. Yo'lovchi va haydovchi to'g'ridan-to'g'ri kelishadi. To'lovni safar oxirida haydovchiga naqd yoki kartaga o'tkazasiz."],
+      ["Haydovchilar qanday tekshiriladi?", "Har bir haydovchi guvohnoma, texpasport va mashina rasmlarini yuklaydi. Hujjatlar tekshirilgach profilida \"Tasdiqlangan haydovchi\" belgisi chiqadi."],
+      ["Safarni bekor qilsam nima bo'ladi?", "Jo'nashdan 2 soat oldin bepul bekor qilishingiz mumkin. Haydovchiga avtomatik xabar boradi, o'rningiz boshqalarga ochiladi."],
+      ["Yo'lda qancha vaqt ketadi?", "Andijon – Toshkent odatda 4,5–5 soat. Kamchiq dovonidagi ob-havoga qarab o'zgarishi mumkin — haydovchi sizga xabar beradi."],
+      ["Bola yoki katta yuk bilan borsam bo'ladimi?", "Ha. Band qilishda izohga yozing: bola o'rindig'i, chamadonlar soni yoki qo'shimcha yuk. Haydovchi oldindan tasdiqlaydi."]
+    ];
+    const faqs = faqSrc.map(([q, a], i) => {
+      const open = s.faq === i;
+      return { q, a, rows: open ? '1fr' : '0fr', rot: open ? 45 : 0, bg: open ? 'var(--bg-alt)' : 'transparent', iconBg: open ? '#FFC300' : 'var(--primary-soft)', toggle: () => this.setState({ faq: open ? -1 : i }) };
+    });
+    const activeLang = (l) => s.lang === l;
+    return {
+      theme: dark ? 'dark' : 'light',
+      headerBg: s.scrolled || s.menuOpen ? 'var(--bg)' : 'transparent',
+      headerShadow: s.scrolled ? 'var(--sh-sm), 0 1px 0 var(--border)' : 'none',
+      isDesktop: !s.isMobile, isMobile: s.isMobile, menuShown: s.isMobile && s.menuOpen,
+      toggleMenu: () => this.setState(x => ({ menuOpen: !x.menuOpen })),
+      uzBg: activeLang('UZ') ? 'var(--ink)' : 'transparent', uzColor: activeLang('UZ') ? 'var(--on-ink)' : 'var(--text-2)',
+      ruBg: activeLang('RU') ? 'var(--ink)' : 'transparent', ruColor: activeLang('RU') ? 'var(--on-ink)' : 'var(--text-2)',
+      setUz: () => this.setState({ lang: 'UZ' }), setRu: () => this.setState({ lang: 'RU' }),
+      tabX: isPass ? 'translateX(0)' : 'translateX(100%)',
+      passColor: isPass ? '#111111' : 'var(--text-2)', cargoColor: isPass ? 'var(--text-2)' : '#111111',
+      tabPass: () => this.setState({ tab: 'pass' }), tabCargo: () => this.setState({ tab: 'cargo' }),
+      isPass, isCargo: !isPass,
+      searchLabel: isPass ? 'Haydovchi qidirish' : 'Yuk uchun haydovchi topish',
+      from: s.from, to: s.to, fromY: s.fromY, toY: s.toY, rot: s.rot, swap: this.swap,
+      swapOpacity: s.swapping && !s.instant ? 0.4 : 1,
+      swapTrans: s.instant ? 'none' : 'transform 300ms cubic-bezier(.22,1,.36,1), opacity 300ms',
+      seats: s.seats, decOp: s.seats <= 1 ? 0.4 : 1, incOp: s.seats >= 4 ? 0.4 : 1,
+      dec: () => this.setState(x => ({ seats: Math.max(1, x.seats - 1) })),
+      inc: () => this.setState(x => ({ seats: Math.min(4, x.seats + 1) })),
+      kg: s.kg, setKg: e => this.setState({ kg: e.target.value.replace(/\D/g, '').slice(0, 5) }),
+      showCar: !s.reduced, showMapCard: p.showMapCard ?? true,
+      trustRef: this.trustRef, c1: fmt(s.c[0]), c2: fmt(s.c[1]), c3: s.c[2].toFixed(1),
+      carRef: this.carRef, prev: () => this.scrollCar(-1), next: () => this.scrollCar(1),
+      reviews, faqs
+    };
+  }
+}
+</script>
+</body>
+</html>

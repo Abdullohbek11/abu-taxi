@@ -1,0 +1,15 @@
+# Maxfiy sozlamalar — hech qachon repozitoriyaga tushmaydi (namunasi: .env.example)
+.env
+.env.local
+.env.production
+**/.env
+!**/.env.example
+
+node_modules/
+dist/
+coverage/
+*.log
+*.tsbuildinfo
+.DS_Store
+backend/uploads/
+backend/uploads-test/
