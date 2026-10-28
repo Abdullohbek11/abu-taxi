@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" rx="224" fill="#FFC300"/>
+  <!-- "A" — uzoqqa ketayotgan yo'l: oyoqlari yo'l chetlari, ichida markaziy chiziq, pastda taksi shashkasi -->
+  <path d="M512 160 L794 772 H662 L512 428 L362 772 H230 Z" fill="#111111" stroke="#111111" stroke-width="28" stroke-linejoin="round"/>
+  <rect x="436" y="560" width="152" height="64" fill="#111111"/>
+  <path d="M503 652 H521 L526 694 H498 Z" fill="#111111"/>
+  <path d="M496 716 H528 L534 772 H490 Z" fill="#111111"/>
+  <g fill="#111111">
+    <rect x="404" y="818" width="36" height="36"/><rect x="476" y="818" width="36" height="36"/><rect x="548" y="818" width="36" height="36"/>
+    <rect x="440" y="854" width="36" height="36"/><rect x="512" y="854" width="36" height="36"/><rect x="584" y="854" width="36" height="36"/>
+  </g>
+</svg>

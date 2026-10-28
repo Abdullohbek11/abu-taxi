@@ -2,7 +2,7 @@
  * - /assets/* (hash'li, o'zgarmaydi) — keshdan, bo'lmasa tarmoqdan;
  * - sahifalar — tarmoqdan, internet yo'q bo'lsa keshdagi index.html;
  * - /api, /socket.io, /uploads, /files — HECH QACHON keshlanmaydi (shaxsiy va jonli ma'lumot). */
-const VERSION = 'abutax-v1';
+const VERSION = 'abutax-v2';
 const SHELL = ['/', '/manifest.webmanifest', '/icons/icon-192.png'];
 
 self.addEventListener('install', (e) => {

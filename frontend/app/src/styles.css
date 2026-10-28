@@ -294,8 +294,10 @@ h4 {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: var(--primary);
-  color: #111;
+  background: var(--primary) url('/logo.svg') center / cover no-repeat;
+  /* "A" harfi faqat ekran o'quvchilar uchun — ko'rinadigan belgi logo.svg da */
+  color: transparent;
+  overflow: hidden;
   display: grid;
   place-items: center;
   font-family: var(--font-head);
